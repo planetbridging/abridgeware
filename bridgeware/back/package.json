@@ -1,0 +1,23 @@
+{
+  "name": "back",
+  "version": "1.0.0",
+  "description": "bridgeware backend linking all services",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bridgeware"
+  ],
+  "author": "Shannon Setter",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "express": "^4.17.3",
+    "mongodb": "^4.5.0",
+    "mongoose": "^5.12.8",
+    "socket.io": "^4.1.1",
+    "socket.io-client": "^4.4.1",
+    "uuid": "^8.3.2"
+  }
+}
