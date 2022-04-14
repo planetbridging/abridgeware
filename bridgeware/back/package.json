@@ -13,11 +13,23 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.26.1",
+    "crypto-js": "^4.1.1",
     "express": "^4.17.3",
     "mongodb": "^4.5.0",
     "mongoose": "^5.12.8",
     "socket.io": "^4.1.1",
     "socket.io-client": "^4.4.1",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.1"
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "crypto-js": [
+        "node_modules/crypto-js"
+      ]
+    }
   }
 }
