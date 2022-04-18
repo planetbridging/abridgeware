@@ -11,7 +11,7 @@ const { encrypt, decrypt } = require('./helpers/crypto')
 
 var port = 80
 
-;(async () => {
+(async () => {
   console.log('welcome to the bridgeware')
   var tk = uuid.v4()
 
