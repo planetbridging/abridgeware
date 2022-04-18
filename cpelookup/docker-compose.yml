@@ -4,3 +4,15 @@ services:
     build: .
     ports:
       - '8123:8123'
+    links:
+      - mongo
+    restart: always
+  mongo:
+    image: mongo:5.0
+    ports:
+      - 28123:27017
+    volumes:
+      - ~/apps/mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGOUSERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGOPASSWORD}

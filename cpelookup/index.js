@@ -1,6 +1,12 @@
 const http = require('http')
 const https = require('https')
 const fs = require('fs')
+const unzipper = require('unzipper')
+require('dotenv').config()
+const webSock = require('./websock')
+
+const objMongo = require('./objMongo')
+var mongoServer = new objMongo.objServer()
 
 var cpeFeedsStart = 'https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-'
 var cpeFeedsEnd = '.json.zip'
@@ -12,7 +18,14 @@ var lstDownloads = []
   await setup()
   await unZipAndUpload()
   console.log('finished setup')
+  setTimeout(connectToDb, 2000)
 })()
+
+async function connectToDb () {
+  console.log('trying to connect to db')
+  await mongoServer.connectToServer()
+  webSock.startServer(mongoServer)
+}
 
 function downloadFile (httporhttps, fileName, link) {
   return new Promise(resolve => {
@@ -55,7 +68,16 @@ async function setup () {
 async function unZipAndUpload () {
   fs.readdir('downloads', (err, files) => {
     files.forEach(file => {
-      console.log(file)
+      if (file.endsWith('.zip')) {
+        var unzipFile = 'downloads/' + file.replace('.zip', '')
+
+        if (!fs.existsSync(unzipFile)) {
+          console.log('unzipping ' + file, 'to ' + unzipFile)
+          fs.createReadStream('downloads/' + file).pipe(
+            unzipper.Extract({ path: unzipFile })
+          )
+        }
+      }
     })
   })
 }
