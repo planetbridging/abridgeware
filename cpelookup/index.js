@@ -11,12 +11,14 @@ var mongoServer = new objMongo.objServer()
 var cpeFeedsStart = 'https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-'
 var cpeFeedsEnd = '.json.zip'
 var lstDownloads = []
+var uniCpe = new Map()
 
 ;(async () => {
   console.log('welcome to the cpelookup')
   console.log('starting setup')
   await setup()
-  await unZipAndUpload()
+  await unZip()
+  await getUniCpe()
   console.log('finished setup')
   setTimeout(connectToDb, 2000)
 })()
@@ -24,6 +26,7 @@ var lstDownloads = []
 async function connectToDb () {
   console.log('trying to connect to db')
   await mongoServer.connectToServer()
+  await saveUniCpeToDb()
   webSock.startServer(mongoServer)
 }
 
@@ -65,7 +68,7 @@ async function setup () {
   }
 }
 
-async function unZipAndUpload () {
+async function unZip () {
   fs.readdir('downloads', (err, files) => {
     files.forEach(file => {
       if (file.endsWith('.zip')) {
@@ -80,4 +83,47 @@ async function unZipAndUpload () {
       }
     })
   })
+}
+
+async function getUniCpe () {
+  for (var y = 2002; y <= 2022; y++) {
+    var buildLink = 'nvdcve-1.1-' + y + '.json'
+    var link = 'downloads/' + buildLink + '/' + buildLink
+    if (fs.existsSync(link)) {
+      console.log('reading ' + y)
+      const data = fs.readFileSync(link, 'utf8')
+      var j = JSON.parse(data)
+      var lst = j['CVE_Items']
+      for (var l in lst) {
+        var lstNodes = lst[l]['configurations']['nodes']
+        for (var n in lstNodes) {
+          var lstCpeMatch = lstNodes[n]['cpe_match']
+          for (var c in lstCpeMatch) {
+            var cpe = lstCpeMatch[c]['cpe23Uri']
+            cpe = cpe.replace('cpe:2.3:', '')
+            cpe = cpe.split(':*')[0]
+            //console.log(cpe)
+            uniCpe.set(cpe)
+          }
+        }
+      }
+      break
+    }
+  }
+}
+
+async function saveUniCpeToDb () {
+  // saveManyToCollection (lst, db, collection)
+  var lstUni = []
+  for (let [key, value] of uniCpe) {
+    //console.log(key, value)
+    lstUni.push({ cpe: key })
+  }
+
+  await mongoServer.deleteAll('cpeSearch', 'uniCpe')
+  await mongoServer.saveManyToCollection(lstUni, 'cpeSearch', 'uniCpe')
+
+  //(nth, collection, db, count)
+  var sample = await mongoServer.getNthItem(1, 'uniCpe', 'cpeSearch', 5)
+  console.log(sample)
 }
