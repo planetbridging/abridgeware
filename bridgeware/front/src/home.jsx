@@ -16,13 +16,14 @@ import {
   Spacer
 } from '@chakra-ui/react'
 import { MdSegment, MdViewHeadline } from 'react-icons/md'
+import { v4 as uuidv4 } from 'uuid'
 
 import logo from './imgs/bridgewarehub.png'
 
 class Home extends React.Component {
   constructor (props) {
     super(props)
-    this.state = { menuShow: false }
+    this.state = { menuShow: false, btnPress: -1 }
   }
 
   toggleMenu () {
@@ -34,13 +35,53 @@ class Home extends React.Component {
     }
   }
 
+  btnPressShow (id) {}
+
   render () {
     const { menuShow } = this.state
+
+    var lstBtns = [
+      ['Security', 'text', -1],
+      ['Cpelookup', 'btn', 1]
+    ]
+
+    var lst = []
+
+    for (var l in lstBtns) {
+      const pressed = lstBtns[l][2]
+      const txt = lstBtns[l][0]
+      switch (lstBtns[l][1]) {
+        case 'text':
+          lst.push(
+            <Text key={uuidv4()} fontSize='xs'>
+              {txt}
+            </Text>
+          )
+          break
+        case 'btn':
+          lst.push(
+            <Button
+              key={uuidv4()}
+              colorScheme='blue'
+              onClick={() => this.setState({ btnPress: pressed })}
+            >
+              <Text fontSize='xs'>{txt}</Text>
+            </Button>
+          )
+          break
+      }
+    }
 
     var menu = (
       <Box p={2} bg='black' color='white'>
         <Stack>
-          <Text>Bridgeware</Text>
+          <Button
+            colorScheme='blue'
+            onClick={() => this.setState({ btnPress: 0 })}
+          >
+            <Text fontSize='xs'>Bridgeware</Text>
+          </Button>
+          <Stack>{lst}</Stack>
         </Stack>
       </Box>
     )

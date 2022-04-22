@@ -114,6 +114,15 @@ class objServer {
     })
   }
 
+  async cpeSearch (search) {
+    var client = await this.client
+      .db('cpeSearch')
+      .collection('uniCpe')
+      .find({ cpe: search })
+      .toArray()
+    return client
+  }
+
   async getNthItem (nth, collection, db, count) {
     var allItems = await this.client
       .db(db)
