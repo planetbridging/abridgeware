@@ -1,13 +1,14 @@
 require('dotenv').config()
 
 const { encrypt, decrypt } = require('./crypto')
+var uuid = require('uuid')
 
 const httpServer = require('http').createServer()
 const io = require('socket.io')(httpServer, {
   // ...
 })
 
-function startServer (mongoServer) {
+async function startServer (mongoServer) {
   io.on('connection', socket => {
     var tk = uuid.v4()
     var secretKey = tk

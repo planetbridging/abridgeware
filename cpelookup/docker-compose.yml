@@ -8,6 +8,7 @@ services:
       - mongo
     restart: always
   mongo:
+    container_name: mongo
     image: mongo:5.0
     ports:
       - 28123:27017

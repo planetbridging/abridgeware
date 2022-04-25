@@ -20,14 +20,43 @@ var uniCpe = new Map()
   await unZip()
   await getUniCpe()
   console.log('finished setup')
-  setTimeout(connectToDb, 2000)
+  //setTimeout(connectToDb, 2000)
+  await sleep(2000)
+  await connectToDb()
 })()
+
+function sleep (ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
 
 async function connectToDb () {
   console.log('trying to connect to db')
-  await mongoServer.connectToServer()
+  var connected = false
+  await sleep(2000)
+  var tried = 0
+  while (!connected) {
+    try {
+      connected = await mongoServer.connectToServer()
+    } catch {}
+
+    if (tried >= 10) {
+      console.log('exit program')
+      process.exit(1)
+    } else {
+      tried += 1
+    }
+    await sleep(2000)
+    console.log('trying to connect to cpe db ' + tried)
+  }
+
+  if (connected) {
+    console.log('connection successful')
+  }
+
   await saveUniCpeToDb()
-  webSock.startServer(mongoServer)
+  await webSock.startServer(mongoServer)
 }
 
 function downloadFile (httporhttps, fileName, link) {

@@ -15,7 +15,7 @@ class objServer {
   }
 
   async connectToServer () {
-    //console.log(this.uri)
+    console.log(this.uri)
     try {
       this.client = new MongoClient(this.uri)
       await this.client.connect()
@@ -24,7 +24,7 @@ class objServer {
       console.log('db', lstdb)
       console.log('successfully connected')
     } catch (ex) {
-      console.log(ex)
+      //console.log(ex)
       console.log('failed to connect to database')
       return false
     }
@@ -118,7 +118,9 @@ class objServer {
     var client = await this.client
       .db('cpeSearch')
       .collection('uniCpe')
-      .find({ cpe: search })
+      //.find({ cpe: search })
+      .find({ cpe: { $regex: search, $options: 'i' } })
+      .limit(10)
       .toArray()
     return client
   }

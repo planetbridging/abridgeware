@@ -6,20 +6,39 @@ var uuid = require('uuid'),
   app = express(),
   server = require('http').createServer(app)
 const axios = require('axios').default
+const io = require('socket.io-client')
 
 const { encrypt, decrypt } = require('./helpers/crypto')
 
+const { objClientListener } = require('./objs')
+
 var port = 80
 
-(async () => {
+;(async () => {
   console.log('welcome to the bridgeware')
-  var tk = uuid.v4()
+  /*var tk = uuid.v4()
 
   var secretKey = tk
 
   var txt_test = encrypt(secretKey, 'Hello from socket shannon')
-  console.log(txt_test)
+  console.log(txt_test)*/
+
+  var objCpelookup = new objClientListener('http://localhost:8123', 'cpelookup')
+  objCpelookup.recReq('cpeSearch', processCpe)
+  await sleep(1000)
+  objCpelookup.sendReq('cpeSearch', { cpe: 'o:freebsd:freebsd:2' })
+  console.log('setup complete')
 })()
+
+function sleep (ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
+function processCpe (j) {
+  console.log(j)
+}
 
 app.use('/', express.static(__dirname + '/build/'))
 
