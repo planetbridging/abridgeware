@@ -1,6 +1,7 @@
 const io = require('socket.io-client')
 
 const { encrypt, decrypt } = require('./helpers/crypto')
+const { sleep } = require('./helpers/mixed')
 
 class objClientListener {
   constructor (ioLink, name) {
@@ -14,7 +15,7 @@ class objClientListener {
     this.chatSocket = io.connect(this.ioLink)
     this.chatSocket.on('setup', data => {
       this.sessionId = data
-      //console.log(this.sessionId)
+      console.log('session setup for ' + this.name)
     })
     this.chatSocket.on('connected', data => {
       var de = decrypt(this.sessionId, data)
@@ -38,6 +39,28 @@ class objClientListener {
   }
 }
 
+class objCpelookup {
+  constructor () {
+    //console.log(process.env.CPELOOKUP)
+    this.objCpelookup = new objClientListener(
+      //process.env.CPELOOKUP,
+      'http://localhost:8123',
+      'cpelookup'
+    )
+    this.objCpelookup.recReq('cpeSearch', this.processCpeSearch)
+  }
+
+  async searchCpe (cpe) {
+    this.objCpelookup.sendReq('cpeSearch', { cpe: cpe })
+  }
+
+  async processCpeSearch (j) {
+    console.log(j)
+    console.log('cpelookup test results')
+  }
+}
+
 module.exports = {
-  objClientListener
+  objClientListener,
+  objCpelookup
 }

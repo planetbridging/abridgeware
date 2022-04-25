@@ -10,12 +10,16 @@ const io = require('socket.io-client')
 
 const { encrypt, decrypt } = require('./helpers/crypto')
 
-const { objClientListener } = require('./objs')
+const obj = require('./objs')
+const { sleep } = require('./helpers/mixed')
 
 var port = 80
 
 ;(async () => {
   console.log('welcome to the bridgeware')
+  var cpelookup = new obj.objCpelookup()
+  await sleep(1000)
+  await cpelookup.searchCpe('a:apache:http_server:2')
   /*var tk = uuid.v4()
 
   var secretKey = tk
@@ -23,22 +27,8 @@ var port = 80
   var txt_test = encrypt(secretKey, 'Hello from socket shannon')
   console.log(txt_test)*/
 
-  var objCpelookup = new objClientListener('http://localhost:8123', 'cpelookup')
-  objCpelookup.recReq('cpeSearch', processCpe)
-  await sleep(1000)
-  objCpelookup.sendReq('cpeSearch', { cpe: 'o:freebsd:freebsd:2' })
   console.log('setup complete')
 })()
-
-function sleep (ms) {
-  return new Promise(resolve => {
-    setTimeout(resolve, ms)
-  })
-}
-
-function processCpe (j) {
-  console.log(j)
-}
 
 app.use('/', express.static(__dirname + '/build/'))
 
