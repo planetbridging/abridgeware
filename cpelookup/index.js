@@ -8,6 +8,8 @@ const webSock = require('./websock')
 const objMongo = require('./objMongo')
 var mongoServer = new objMongo.objServer()
 
+const genHomePage = require('./pageGenerate/home')
+
 var cpeFeedsStart = 'https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-'
 var cpeFeedsEnd = '.json.zip'
 var lstDownloads = []
@@ -23,6 +25,7 @@ var uniCpe = new Map()
   //setTimeout(connectToDb, 2000)
   await sleep(2000)
   await connectToDb()
+  await genHomePage.generateHomePage(mongoServer)
 })()
 
 function sleep (ms) {
@@ -57,6 +60,22 @@ async function connectToDb () {
 
   await saveUniCpeToDb()
   await webSock.startServer(mongoServer)
+}
+
+async function saveUniCpeToDb () {
+  // saveManyToCollection (lst, db, collection)
+  var lstUni = []
+  for (let [key, value] of uniCpe) {
+    //console.log(key, value)
+    lstUni.push({ cpe: key })
+  }
+
+  await mongoServer.deleteAll('cpeSearch', 'uniCpe')
+  await mongoServer.saveManyToCollection(lstUni, 'cpeSearch', 'uniCpe')
+
+  //(nth, collection, db, count)
+  var sample = await mongoServer.getNthItem(1, 'uniCpe', 'cpeSearch', 5)
+  console.log(sample)
 }
 
 function downloadFile (httporhttps, fileName, link) {
@@ -139,20 +158,4 @@ async function getUniCpe () {
       break
     }
   }
-}
-
-async function saveUniCpeToDb () {
-  // saveManyToCollection (lst, db, collection)
-  var lstUni = []
-  for (let [key, value] of uniCpe) {
-    //console.log(key, value)
-    lstUni.push({ cpe: key })
-  }
-
-  await mongoServer.deleteAll('cpeSearch', 'uniCpe')
-  await mongoServer.saveManyToCollection(lstUni, 'cpeSearch', 'uniCpe')
-
-  //(nth, collection, db, count)
-  var sample = await mongoServer.getNthItem(1, 'uniCpe', 'cpeSearch', 5)
-  console.log(sample)
 }

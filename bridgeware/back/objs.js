@@ -2,6 +2,7 @@ const io = require('socket.io-client')
 
 const { encrypt, decrypt } = require('./helpers/crypto')
 const { sleep } = require('./helpers/mixed')
+require('dotenv').config()
 
 class objClientListener {
   constructor (ioLink, name) {
@@ -34,17 +35,21 @@ class objClientListener {
 
   sendReq (channel, jdata) {
     console.log(this.sessionId)
-    var jSend = encrypt(this.sessionId, JSON.stringify(jdata))
-    this.chatSocket.emit(channel, jSend)
+    try {
+      var jSend = encrypt(this.sessionId, JSON.stringify(jdata))
+      this.chatSocket.emit(channel, jSend)
+    } catch {
+      console.log('sending failed')
+    }
   }
 }
 
 class objCpelookup {
   constructor () {
-    //console.log(process.env.CPELOOKUP)
+    console.log(process.env.CPELOOKUP)
     this.objCpelookup = new objClientListener(
-      //process.env.CPELOOKUP,
-      'http://localhost:8123',
+      'http://' + process.env.CPELOOKUP,
+      //'http://localhost:8123',
       'cpelookup'
     )
     this.objCpelookup.recReq('cpeSearch', this.processCpeSearch)
@@ -60,7 +65,17 @@ class objCpelookup {
   }
 }
 
+class objCpe {
+  constructor (name, cveCount, exploitCount, subitems) {
+    this.name = name
+    this.cveCount = cveCount
+    this.exploitCount = exploitCount
+    this.subitems = subitems
+  }
+}
+
 module.exports = {
   objClientListener,
-  objCpelookup
+  objCpelookup,
+  objCpe
 }
