@@ -65,17 +65,7 @@ class objCpelookup {
   }
 }
 
-class objCpe {
-  constructor (name, cveCount, exploitCount, subitems) {
-    this.name = name
-    this.cveCount = cveCount
-    this.exploitCount = exploitCount
-    this.subitems = subitems
-  }
-}
-
 module.exports = {
   objClientListener,
-  objCpelookup,
-  objCpe
+  objCpelookup
 }

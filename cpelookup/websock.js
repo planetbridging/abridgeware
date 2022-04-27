@@ -29,7 +29,7 @@ async function startServer (mongoServer) {
     })
   })
 
-  httpServer.listen(8123)
+  httpServer.listen(8124)
 }
 
 module.exports = {

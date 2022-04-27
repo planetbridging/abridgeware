@@ -10,7 +10,7 @@ class objServer {
       username +
       ':' +
       password +
-      '@mongo:27017/?authSource=admin'
+      '@localhost:28123/?authSource=admin'
     this.client = null
   }
 
