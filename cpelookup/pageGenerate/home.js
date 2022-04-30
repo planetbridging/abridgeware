@@ -24,6 +24,8 @@ async function generateHomePage (mongoServer) {
 
   console.log('max levels: ' + maxLevels)
   generateBedrock(lstBase)
+  generateNextLevel(lstBase)
+  await saveCpeLevels(mongoServer)
 }
 
 function generateBedrock (lstBase) {
@@ -40,8 +42,6 @@ function generateBedrock (lstBase) {
             if (!uniLevelItems.has(cpeLvls[l])) {
               var objCpe = {
                 name: cpeLvls[l],
-                cveCount: 0,
-                exploitCount: 0,
                 nextLevelItems: [],
                 level: l
               }
@@ -52,11 +52,52 @@ function generateBedrock (lstBase) {
         }
       }
     }
+    if (lstLevel.length > 0) {
+      lstCpeLevels.push(lstLevel)
+    }
 
-    lstCpeLevels.push(lstLevel)
+    //console.log(lstLevel.length)
   }
 
-  console.log(lstCpeLevels)
+  //console.log(lstCpeLevels)
+}
+
+function generateNextLevel (lstBase) {
+  for (var c in lstCpeLevels) {
+    console.log('lvl' + c)
+    for (var i in lstCpeLevels[c]) {
+      for (var b in lstBase) {
+        if (lstBase[b] != null) {
+          if (lstBase[b].includes(':')) {
+            var cpeLvls = lstBase[b].split(':')
+            var nextLvlnum = Number(i) + Number(1)
+
+            if (nextLvlnum <= cpeLvls.length) {
+              if (
+                !lstCpeLevels[c][i].nextLevelItems.includes(cpeLvls[nextLvlnum])
+              ) {
+                lstCpeLevels[c][i].nextLevelItems.push(cpeLvls[nextLvlnum])
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  console.log('generateNextLevel finished')
+}
+
+async function saveCpeLevels (mongoServer) {
+  for (var c in lstCpeLevels) {
+    console.log('saving lvl' + c)
+    await mongoServer.deleteAll('cpeSearch', 'cpeStatsLvl' + c)
+    await mongoServer.saveManyToCollection(
+      lstCpeLevels[c],
+      'cpeSearch',
+      'cpeStatsLvl' + c
+    )
+  }
 }
 
 module.exports = {
