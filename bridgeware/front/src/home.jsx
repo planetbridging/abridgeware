@@ -19,6 +19,7 @@ import { MdSegment, MdViewHeadline } from 'react-icons/md'
 import { v4 as uuidv4 } from 'uuid'
 
 import logo from './imgs/bridgewarehub.png'
+import logoCpelookup from './imgs/cpelookup.png'
 
 class Home extends React.Component {
   constructor (props) {
@@ -35,7 +36,36 @@ class Home extends React.Component {
     }
   }
 
-  btnPressShow (id) {}
+  getSelectedBtn () {
+    const { btnPress } = this.state
+
+    switch (btnPress) {
+      case -1:
+        return (
+          <HStack>
+            <Image
+              borderRadius='full'
+              boxSize='75px'
+              src={logo}
+              alt='Bridgeware'
+            />
+            <Text fontSize='4xl'>Bridgeware</Text>
+          </HStack>
+        )
+      case 1:
+        return (
+          <HStack>
+            <Image
+              borderRadius='full'
+              boxSize='75px'
+              src={logoCpelookup}
+              alt='Cpelookup'
+            />
+            <Text fontSize='4xl'>Cpelookup</Text>
+          </HStack>
+        )
+    }
+  }
 
   render () {
     const { menuShow } = this.state
@@ -77,7 +107,7 @@ class Home extends React.Component {
         <Stack>
           <Button
             colorScheme='blue'
-            onClick={() => this.setState({ btnPress: 0 })}
+            onClick={() => this.setState({ btnPress: -1 })}
           >
             <Text fontSize='xs'>Bridgeware</Text>
           </Button>
@@ -115,17 +145,7 @@ class Home extends React.Component {
           </GridItem>
           <GridItem rowSpan={60} colSpan={5} bg='#07B6FD'>
             <Box w='100%' h='100%' p={2} color='white'>
-              <Center>
-                <HStack>
-                  <Image
-                    borderRadius='full'
-                    boxSize='75px'
-                    src={logo}
-                    alt='Bridgeware'
-                  />
-                  <Text fontSize='4xl'>Bridgeware</Text>
-                </HStack>
-              </Center>
+              <Center>{this.getSelectedBtn()}</Center>
             </Box>
           </GridItem>
           <GridItem rowSpan={1} colSpan={5} bg='black'>

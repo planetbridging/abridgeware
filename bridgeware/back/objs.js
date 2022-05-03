@@ -53,15 +53,26 @@ class objCpelookup {
       'cpelookup'
     )
     this.objCpelookup.recReq('cpeSearch', this.processCpeSearch)
+    this.objCpelookup.recReq('lstCpeCollections', this.processCpeLevels)
+    this.objCpelookup.sendReq('lstCpeCollections', { cpe: '' })
   }
 
   async searchCpe (cpe) {
     this.objCpelookup.sendReq('cpeSearch', { cpe: cpe })
   }
 
+  async dynSend () {
+    //this.objCpelookup
+  }
+
   async processCpeSearch (j) {
     console.log(j)
     console.log('cpelookup test results')
+  }
+
+  async processCpeLevels (j) {
+    console.log(j)
+    console.log('cpelookup lvls results')
   }
 }
 
