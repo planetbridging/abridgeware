@@ -17,9 +17,19 @@ import {
 } from '@chakra-ui/react'
 import { MdSegment, MdViewHeadline } from 'react-icons/md'
 import { v4 as uuidv4 } from 'uuid'
+import io from 'socket.io-client'
 
 import logo from './imgs/bridgewarehub.png'
 import logoCpelookup from './imgs/cpelookup.png'
+
+var testing = true
+var chatSocket = null
+
+if (testing) {
+  chatSocket = io.connect('http://localhost:800')
+} else {
+  chatSocket = io.connect()
+}
 
 class Home extends React.Component {
   constructor (props) {

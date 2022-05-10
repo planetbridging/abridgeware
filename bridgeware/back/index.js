@@ -25,13 +25,16 @@ var port = 80
 
   var txt_test = encrypt(secretKey, 'Hello from socket shannon')
   console.log(txt_test)*/
-  //startServer()
+  startServer()
   console.log('setup complete')
 })()
 
 const httpServer = require('http').createServer()
 const io = require('socket.io')(httpServer, {
-  // ...
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
 })
 
 async function startServer () {
