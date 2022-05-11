@@ -52,6 +52,7 @@ class objCpelookup {
       //'http://localhost:8123',
       'cpelookup'
     )
+
     this.objCpelookup.recReq('cpeSearch', this.processCpeSearch)
     this.objCpelookup.recReq('lstCpeCollections', this.processCpeLevels)
     this.objCpelookup.sendReq('lstCpeCollections', { cpe: '' })

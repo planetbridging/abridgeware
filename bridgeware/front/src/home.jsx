@@ -22,9 +22,11 @@ import io from 'socket.io-client'
 import logo from './imgs/bridgewarehub.png'
 import logoCpelookup from './imgs/cpelookup.png'
 
+import * as security from './crypto'
+
 var testing = true
 var chatSocket = null
-
+var sessionId = ''
 if (testing) {
   chatSocket = io.connect('http://localhost:800')
 } else {
@@ -32,9 +34,23 @@ if (testing) {
 }
 
 class Home extends React.Component {
+  state = { menuShow: false, btnPress: -1, connectionSetup: false }
   constructor (props) {
     super(props)
-    this.state = { menuShow: false, btnPress: -1 }
+    this.loadSocket()
+  }
+
+  async loadSocket () {
+    chatSocket.on('setup', data => {
+      sessionId = data
+    })
+
+    chatSocket.on('connected', data => {
+      var de = security.decrypt(sessionId, data)
+      console.log(de)
+
+      this.setState({ connectionSetup: true })
+    })
   }
 
   toggleMenu () {

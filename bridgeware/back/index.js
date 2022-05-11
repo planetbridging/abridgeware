@@ -14,9 +14,11 @@ const { sleep } = require('./helpers/mixed')
 
 var port = 80
 
+var cpelookup = null
+
 ;(async () => {
   console.log('welcome to the bridgeware')
-  var cpelookup = new obj.objCpelookup()
+  cpelookup = new obj.objCpelookup()
   await sleep(1000)
   await cpelookup.searchCpe('a:apache:http_server:2')
   /*var tk = uuid.v4()
