@@ -63,6 +63,20 @@ class objCpelookup {
     this.objCpelookup.sendReq('lstCpeCollections', {
       cpe: ''
     })
+    this.bridgewareLoadSocket()
+  }
+
+  async bridgewareLoadSocket () {
+    this.socket.on('cpeSearch', data => {
+      //console.log('searching cpe')
+      try {
+        var de = decrypt(this.secretKey, data)
+        var j = JSON.parse(de)
+        this.searchCpe(j['cpe'])
+      } catch {
+        console.log('bridgeware cpe search problem')
+      }
+    })
   }
 
   async searchCpe (cpe) {
@@ -74,8 +88,8 @@ class objCpelookup {
   }
 
   async processCpeSearch (j) {
-    console.log(j)
-    console.log('cpelookup test results')
+    var jSend = encrypt(this.secretKey, JSON.stringify(j))
+    this.socket.emit('cpeSearch', jSend)
   }
 
   async processCpeLevels (j) {
