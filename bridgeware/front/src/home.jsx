@@ -24,6 +24,8 @@ import logoCpelookup from './imgs/cpelookup.png'
 
 import * as security from './crypto'
 
+import WindowCpelookup from './cpelookup'
+
 var testing = true
 var chatSocket = null
 var sessionId = ''
@@ -34,7 +36,13 @@ if (testing) {
 }
 
 class Home extends React.Component {
-  state = { menuShow: false, btnPress: -1, connectionSetup: false }
+  state = {
+    menuShow: false,
+    btnPress: -1,
+    connectionSetup: false,
+    //cpelookup
+    cpeLvls: {}
+  }
   constructor (props) {
     super(props)
     this.loadSocket()
@@ -51,6 +59,17 @@ class Home extends React.Component {
 
       this.setState({ connectionSetup: true })
     })
+
+    chatSocket.on('cpeLevels', data => {
+      var de = security.decrypt(sessionId, data)
+      try {
+        this.setState({ cpeLvls: JSON.parse(de) })
+      } catch {
+        console.log('failed to parse levels')
+      }
+
+      //this.setState({ connectionSetup: true })
+    })
   }
 
   toggleMenu () {
@@ -63,7 +82,7 @@ class Home extends React.Component {
   }
 
   getSelectedBtn () {
-    const { btnPress } = this.state
+    const { btnPress, cpeLvls } = this.state
 
     switch (btnPress) {
       case -1:
@@ -80,15 +99,26 @@ class Home extends React.Component {
         )
       case 1:
         return (
-          <HStack>
-            <Image
-              borderRadius='full'
-              boxSize='75px'
-              src={logoCpelookup}
-              alt='Cpelookup'
-            />
-            <Text fontSize='4xl'>Cpelookup</Text>
-          </HStack>
+          <Box w='100%'>
+            <Stack>
+              <Center>
+                <HStack>
+                  <Image
+                    borderRadius='full'
+                    boxSize='75px'
+                    src={logoCpelookup}
+                    alt='Cpelookup'
+                  />
+                  <Text fontSize='4xl'>Cpelookup</Text>
+                </HStack>
+              </Center>
+              <WindowCpelookup
+                chatSocket={chatSocket}
+                sessionId={sessionId}
+                cpeLvls={cpeLvls}
+              />
+            </Stack>
+          </Box>
         )
     }
   }

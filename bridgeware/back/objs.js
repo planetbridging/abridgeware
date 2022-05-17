@@ -45,7 +45,9 @@ class objClientListener {
 }
 
 class objCpelookup {
-  constructor () {
+  constructor (socket, secretKey) {
+    this.socket = socket
+    this.secretKey = secretKey
     console.log(process.env.CPELOOKUP)
     this.objCpelookup = new objClientListener(
       'http://' + process.env.CPELOOKUP,
@@ -53,9 +55,14 @@ class objCpelookup {
       'cpelookup'
     )
 
-    this.objCpelookup.recReq('cpeSearch', this.processCpeSearch)
-    this.objCpelookup.recReq('lstCpeCollections', this.processCpeLevels)
-    this.objCpelookup.sendReq('lstCpeCollections', { cpe: '' })
+    this.objCpelookup.recReq('cpeSearch', this.processCpeSearch.bind(this))
+    this.objCpelookup.recReq(
+      'lstCpeCollections',
+      this.processCpeLevels.bind(this)
+    )
+    this.objCpelookup.sendReq('lstCpeCollections', {
+      cpe: ''
+    })
   }
 
   async searchCpe (cpe) {
@@ -72,8 +79,10 @@ class objCpelookup {
   }
 
   async processCpeLevels (j) {
-    console.log(j)
-    console.log('cpelookup lvls results')
+    //console.log(j)
+    //console.log('cpelookup lvls results')
+    var jSend = encrypt(this.secretKey, JSON.stringify(j))
+    this.socket.emit('cpeLevels', jSend)
   }
 }
 
